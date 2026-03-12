@@ -1,0 +1,9 @@
+# Configuration settings
+main:
+  OUTPUT_DIR: "d:/videoconv/output"
+  MODEL_NAME: "google/gemma-3-1b"
+  FILE_EXTENSION: "*.srt"
+  OPENAI_BASE_URL: "http://127.0.0.1:1234/v1"
+  OPENAI_ENDPOINT: "http://127.0.0.1:1234/v1/chat/completions"
+  TIKTOKEN_CACHE_DIR: "./cache"
+  OPENAI_MAX_TOKENS: 31000
