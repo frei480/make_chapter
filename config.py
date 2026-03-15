@@ -21,7 +21,6 @@ class MainSettings(YamlBaseSettings):
     OUTPUT_DIR: str
     MODEL_NAME: str
     FILE_EXTENSION: str
-    OPENAI_ENDPOINT: str
     TIKTOKEN_CACHE_DIR: str
     OPENAI_MAX_TOKENS: int
 
