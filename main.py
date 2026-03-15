@@ -21,7 +21,7 @@ max_tokens_per_request = cfg.main.OPENAI_MAX_TOKENS
 def get_openai_client() -> AsyncOpenAI:
     return AsyncOpenAI(
         api_key=cfg.api_keys.OPENAI_API_KEY,
-        base_url=cfg.main.OPENAI_BASE_URL,
+        base_url=cfg.api_keys.OPENAI_BASE_URL,
     )
 
 
@@ -62,6 +62,9 @@ async def process_file(file: Path) -> None:
 async def main() -> None:
     file = files[0]
     for file in files:
+        if file.with_suffix(".md").exists():
+            logger.info(f"Skipping {file}")
+            continue
         await process_file(file)
 
 

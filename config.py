@@ -9,6 +9,7 @@ class APIKeys(BaseSettings):
         env_file=".env", case_sensitive=False, env_file_encoding="utf-8"
     )
     OPENAI_API_KEY: str
+    OPENAI_BASE_URL: str
 
 
 class MainSettings(YamlBaseSettings):
@@ -20,7 +21,6 @@ class MainSettings(YamlBaseSettings):
     OUTPUT_DIR: str
     MODEL_NAME: str
     FILE_EXTENSION: str
-    OPENAI_BASE_URL: str
     OPENAI_ENDPOINT: str
     TIKTOKEN_CACHE_DIR: str
     OPENAI_MAX_TOKENS: int
