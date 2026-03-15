@@ -1,0 +1,96 @@
+import re
+from pathlib import Path
+
+
+def parse_time(t: str) -> int:
+    """
+    Преобразует строку времени в общее количество секунд.
+
+    Поддерживает форматы "MM:SS" и "HH:MM:SS".
+    Часы, минуты и секунды должны быть целыми числами.
+
+    Args:
+        t (str): Строка времени, разделённая двоеточием.
+
+    Returns:
+        int: Общее количество секунд.
+    """
+    parts: list[int] = list(map(int, t.split(":")))
+    h, m, s = 0, 0, 0
+    if len(parts) == 2:
+        m, s = parts
+    elif len(parts) == 3:
+        h, m, s = parts
+    return h * 3600 + m * 60 + s
+
+
+def format_time(seconds: int) -> str:
+    """
+    Форматирует количество секунд в строку времени HH:MM:SS.000.
+
+    Args:
+        seconds (int): Количество секунд.
+
+    Returns:
+        str: Строка времени в формате "HH:MM:SS.000".
+    """
+    h: int = seconds // 3600
+    seconds %= 3600
+    m = seconds // 60
+    s = seconds % 60
+    return f"{h:02}:{m:02}:{s:02}.000"
+
+
+def convert_to_vtt(input_file: Path, output_file: Path) -> None:
+    """
+    Конвертирует текстовый файл с субтитрами в формат WebVTT.
+
+    Ожидает, что входной файл содержит строки с временными метками
+    в формате "MM:SS" или "HH:MM:SS", за которыми следует текст субтитра.
+    Пустые строки игнорируются.
+
+    Args:
+        input_file (Path): Путь к входному текстовому файлу.
+        output_file (Path): Путь для сохранения файла .vtt.
+
+    Returns:
+        None
+    """
+    content = input_file.read_text(encoding="utf-8")
+    lines = [line.strip() for line in content.split("\n")]
+
+    entries: list[tuple[str, str]] = []
+
+    i = 0
+    while i < len(lines) - 1:
+        if re.match(r"^\d+:\d+", lines[i]):
+            entries.append((lines[i], lines[i + 1]))
+            i += 2
+        else:
+            i += 1
+
+    times = [parse_time(t) for t, _ in entries]
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write("WEBVTT\n\n")
+
+        last_duration = 5  # длительность по умолчанию в секундах
+        for i, text in enumerate(entries):
+            start = times[i]
+
+            if i < len(times) - 1:
+                end = times[i + 1]
+                last_duration = end - start
+            else:
+                end = start + last_duration
+
+            f.write(f"{format_time(start)} --> {format_time(end)}\n")
+            f.write(text[1] + "\n\n")
+
+
+if __name__ == "__main__":
+    input_folder = Path(r"d:/Video/Линейная алгебра")
+    input_files = [f for f in input_folder.rglob("*.txt")]
+    for input_file in input_files:
+        output_file = input_file.with_suffix(".vtt")
+        convert_to_vtt(input_file, output_file)
